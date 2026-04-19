@@ -24,11 +24,14 @@ class ForceLayout:
     Uses a fixed seed derived from the proof hash so same input → same layout.
     """
 
-    REPULSION = 1200.0
-    SPRING_K  = 0.08
-    SPRING_L  = 2.5      # rest length
-    DAMPING   = 0.82
-    ITERATIONS = 200
+    REPULSION = 8.0
+    SPRING_K  = 0.15
+    SPRING_L  = 2.5      # rest length (Manim world units)
+    DAMPING   = 0.75
+    ITERATIONS = 300
+    MAX_SPEED = 0.5       # clamp velocity to keep nodes in-frame
+    # Gentle gravity toward origin so isolated nodes don't drift to infinity
+    GRAVITY   = 0.02
 
     def __init__(self, proof_hash: str):
         # deterministic PRNG — LCG seeded by proof_hash
@@ -104,6 +107,18 @@ class ForceLayout:
                 fy = force * dy / dist
                 a.vx += fx; a.vy += fy
                 b.vx -= fx; b.vy -= fy
+
+            # Gravity toward origin (keeps disconnected nodes from drifting)
+            for n in nodes.values():
+                n.vx -= n.x * self.GRAVITY
+                n.vy -= n.y * self.GRAVITY
+
+            # Clamp velocity
+            for n in nodes.values():
+                speed = math.sqrt(n.vx * n.vx + n.vy * n.vy)
+                if speed > self.MAX_SPEED:
+                    n.vx = n.vx / speed * self.MAX_SPEED
+                    n.vy = n.vy / speed * self.MAX_SPEED
 
             # Integrate
             for n in nodes.values():

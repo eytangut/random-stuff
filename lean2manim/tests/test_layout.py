@@ -13,14 +13,18 @@ def test_deterministic_same_seed():
         assert abs(p1[nid][1] - p2[nid][1]) < 1e-9
 
 
-def test_different_seed_different_layout():
-    fl1 = ForceLayout("aaaa0000")
-    fl2 = ForceLayout("bbbb1111")
-    nodes = ["g0", "g1"]
-    p1 = fl1.run(nodes, [])
-    p2 = fl2.run(nodes, [])
-    # At least one coordinate must differ (different seeds → different random start)
-    assert any(abs(p1[n][i] - p2[n][i]) > 0.01 for n in nodes for i in range(2))
+def test_different_topology_different_layout():
+    # Different graph topologies produce different layouts (meaningful determinism).
+    # Linear chain vs star topology: g2 ends up in different positions.
+    fl1 = ForceLayout("seed")
+    fl2 = ForceLayout("seed")
+    nodes = ["g0", "g1", "g2", "g3"]
+    linear_edges = [("g0", "g1"), ("g1", "g2"), ("g2", "g3")]
+    star_edges   = [("g0", "g1"), ("g0", "g2"), ("g0", "g3")]
+    p_linear = fl1.run(nodes, linear_edges)
+    p_star   = fl2.run(nodes, star_edges)
+    # Same seed but different topology → different positions for at least one node
+    assert any(abs(p_linear[n][i] - p_star[n][i]) > 0.1 for n in nodes for i in range(2))
 
 
 def test_empty_layout():
