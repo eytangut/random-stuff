@@ -12,9 +12,17 @@ dependencies = [
     "manim>=0.18.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+]
+
 [project.scripts]
 lean2manim = "lean2manim.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["lean2manim*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

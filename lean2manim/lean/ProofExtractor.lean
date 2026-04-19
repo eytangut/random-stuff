@@ -217,20 +217,49 @@ abbrev ExtractM := StateT ExtractState TacticM
 /-- Record a tactic step: capture pre-state, run the tactic, capture post-state. -/
 def recordStep (tacticName : String) (tacticArgs : Array String)
     (innerTac : TacticM Unit) : ExtractM Unit := do
-  -- Pre-state: lift MetaM operations into TacticM/ExtractM via liftMetaTactic'
+  -- Pre-state: capture goals and local context before the tactic runs
   let preGoals ← getGoals
+  let stepId := (← get).stepCount
   let preGoalData ← preGoals.enum.mapM fun (i, g) =>
-    liftM (m := MetaM) <| goalToData g s!"g{(← get).stepCount}_{i}"
+    liftM (m := MetaM) <| goalToData g s!"g{stepId}_{i}"
+  -- Collect hypothesis names present before the tactic (from first goal's lctx)
+  let preHypNames : Array String ← match preGoals.head? with
+    | none => pure #[]
+    | some g => liftM (m := MetaM) <| do
+        let decl ← g.getDecl
+        return decl.lctx.toArray.filterMap fun ldecl =>
+          if ldecl.isAuxDecl then none else some ldecl.userName.toString
   -- Run the actual tactic
   liftM (m := TacticM) innerTac
-  -- Post-state
+  -- Post-state: capture goals and local context after the tactic
   let postGoals ← getGoals
   let postGoalData ← postGoals.enum.mapM fun (i, g) =>
-    liftM (m := MetaM) <| goalToData g s!"g{(← get).stepCount}_{i}_post"
-  -- Detect new hypotheses (simplified: compare local context sizes)
-  let hypAdded : Array HypData := #[]
-  let hypRemoved : Array String := #[]
-  let stepId ← get |>.map (·.stepCount)
+    liftM (m := MetaM) <| goalToData g s!"g{stepId}_{i}_post"
+  -- Detect added/removed hypotheses by comparing first goal's local context
+  let postHypNames : Array String ← match postGoals.head? with
+    | none => pure #[]
+    | some g => liftM (m := MetaM) <| do
+        let decl ← g.getDecl
+        return decl.lctx.toArray.filterMap fun ldecl =>
+          if ldecl.isAuxDecl then none else some ldecl.userName.toString
+  let preSet  := preHypNames.toList.toFinset
+  let postSet := postHypNames.toList.toFinset
+  -- Hypotheses added: in post but not in pre
+  let addedNames := postHypNames.filter fun n => !preSet.contains n
+  -- Hypotheses removed: in pre but not in post
+  let removedNames := preHypNames.filter fun n => !postSet.contains n
+  -- Build HypData for added hypotheses (fetch their types from post-goal lctx)
+  let hypAdded : Array HypData ← match postGoals.head? with
+    | none => pure #[]
+    | some g => liftM (m := MetaM) <| do
+        let decl ← g.getDecl
+        addedNames.filterMapM fun n => do
+          match decl.lctx.findFromUserName? n.toName with
+          | none      => return none
+          | some ldecl =>
+            let typeData ← exprToData ldecl.type "hypothesis"
+            return some { name := n, typeExpr := typeData, introducedAtStep := stepId }
+  let hypRemoved : Array String := removedNames
   let step : StepData := {
     id         := stepId,
     tactic     := tacticName,

@@ -133,6 +133,22 @@ class ProofNode(VGroup):
                 self.add(box, inner, tex)
             except Exception:
                 self._fallback(safe_label, col)
+        elif encoding == "axis_region":
+            try:
+                ax = Axes(
+                    x_range=[-3, 3, 1], y_range=[-1, 1, 1],
+                    x_length=4, y_length=1.5,
+                    axis_config={"color": col, "stroke_width": 2},
+                    tips=False,
+                )
+                region = ax.get_area(
+                    ax.plot(lambda x: 0.6, x_range=[-2, 2], color=col),
+                    x_range=[-2, 2], color=col, opacity=0.2,
+                )
+                tex = MathTex(safe_label, color=col).scale(0.65).next_to(ax, UP, buff=0.1)
+                self.add(ax, region, tex)
+            except Exception:
+                self._fallback(safe_label, col)
         elif encoding == "forall_param":
             try:
                 slider_line = Line(LEFT * 1.2, RIGHT * 1.2, color=col)
@@ -342,6 +358,9 @@ def emit_scene_file(proof_tree: ProofTree, output_path: str, style: str = "auto"
     # ── 4. Tactic steps ───────────────────────────────────────────────────────
     emitted_goals: set[str] = set(initial_goals_emitted)
     step_count = 0
+    # Maps hypothesis name → the shelf key used when the hyp was added to the shelf.
+    # Used to emit shelf.remove_item() calls when hyp_removed is non-empty.
+    hyp_shelf_keys: dict[str, str] = {}
 
     for step in proof_tree.steps:
         step_count += 1
@@ -379,6 +398,7 @@ def emit_scene_file(proof_tree: ProofTree, output_path: str, style: str = "auto"
                 # Copy to shelf
                 buf.write(f'{ind}_shelf_copy_{hyp_vname} = {hyp_vname}.copy()\n')
                 buf.write(f'{ind}shelf.add_item("{hyp_id}", _shelf_copy_{hyp_vname})\n')
+                hyp_shelf_keys[hyp.name] = hyp_id
             # Camera on pre-goal
             if active_pre_goal_id:
                 pre_pos = positions.get(active_pre_goal_id, (0.0, 0.0))
@@ -643,8 +663,11 @@ def emit_scene_file(proof_tree: ProofTree, output_path: str, style: str = "auto"
                     buf.write(f'{ind}{pg_vname} = ProofNode("{pg_label}", "{pg_spec.encoding}", "{pg_color}")\n')
                     buf.write(f'{ind}{pg_vname}.move_to({_pos_str(pg_pos)})\n')
                     if active_pre_goal_id:
-                        buf.write(f'{ind}self.play(Transform(active_nodes.get("{active_pre_goal_id}", {pg_vname}), {pg_vname}), run_time=0.7)\n')
-                        buf.write(f'{ind}active_nodes.pop("{active_pre_goal_id}", None)\n')
+                        buf.write(f'{ind}if "{active_pre_goal_id}" in active_nodes:\n')
+                        buf.write(f'{ind}    self.play(Transform(active_nodes["{active_pre_goal_id}"], {pg_vname}), run_time=0.7)\n')
+                        buf.write(f'{ind}    active_nodes.pop("{active_pre_goal_id}", None)\n')
+                        buf.write(f'{ind}else:\n')
+                        buf.write(f'{ind}    self.play(FadeIn({pg_vname}), run_time=0.7)\n')
                     else:
                         buf.write(f'{ind}self.play(FadeIn({pg_vname}), run_time=0.6)\n')
                     buf.write(f'{ind}active_nodes["{pg.id}"] = {pg_vname}\n')
@@ -652,6 +675,13 @@ def emit_scene_file(proof_tree: ProofTree, output_path: str, style: str = "auto"
                 buf.write(f'{ind}self.play(FadeOut(active_nodes["{active_pre_goal_id}"]), run_time=0.5)\n')
                 buf.write(f'{ind}active_nodes.pop("{active_pre_goal_id}", None)\n')
                 buf.write(f'{ind}self.wait(0.4)\n')
+
+        # Remove hypotheses from shelf when hyp_removed is populated
+        for removed_name in step.hyp_removed:
+            shelf_key = hyp_shelf_keys.pop(removed_name, None)
+            if shelf_key is not None:
+                buf.write(f'{ind}# Remove hypothesis {removed_name} from shelf\n')
+                buf.write(f'{ind}shelf.remove_item("{shelf_key}")\n')
 
         buf.write(f'\n')
 
