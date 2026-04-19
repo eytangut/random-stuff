@@ -10,6 +10,9 @@ from .visual_dispatch import goal_visual_spec, tactic_anim_hint, _expr_label
 from .layout import ForceLayout
 from .scene_graph import SceneGraph, SceneNode
 
+# Number of tactic steps between recap camera pull-back breaths
+RECAP_FREQUENCY = 10
+
 
 # ── Inlined class definitions written verbatim into the generated scene file ──
 
@@ -278,14 +281,9 @@ def emit_scene_file(proof_tree: ProofTree, output_path: str) -> None:
 
     # ── 1. Theorem header ─────────────────────────────────────────────────────
     thm_name = proof_tree.theorem_name.replace('"', '\\"')
-    thm_stmt = proof_tree.theorem_statement.replace('"', '\\"').replace("\\", "\\\\")
-    # For MathTex, escape special chars
-    thm_stmt_tex = thm_stmt.replace("∀", r"\forall ").replace("∃", r"\exists ").replace("→", r"\to ").replace("↦", r"\mapsto ")
-
+    safe_stmt = proof_tree.theorem_statement.replace('"', "'")
     buf.write(f'{ind}# ── Theorem header ──\n')
     buf.write(f'{ind}header = Text("{thm_name}", font_size=36, color=WHITE)\n')
-    # Use Text for statement to avoid LaTeX issues with arbitrary strings
-    safe_stmt = proof_tree.theorem_statement.replace('"', "'")
     buf.write(f'{ind}stmt = Text("{safe_stmt}", font_size=18, color=ManimColor("#A0A0A0"))\n')
     buf.write(f'{ind}VGroup(header, stmt).arrange(DOWN, buff=0.2).to_edge(UP, buff=0.3)\n')
     buf.write(f'{ind}self.play(Write(header), run_time=1.0)\n')
@@ -636,7 +634,7 @@ def emit_scene_file(proof_tree: ProofTree, output_path: str) -> None:
         buf.write(f'\n')
 
         # Every 10 steps: recap breath
-        if step_count % 10 == 0:
+        if step_count % RECAP_FREQUENCY == 0:
             buf.write(f'{ind}# ── Recap breath (step {step_count}) ──\n')
             buf.write(f'{ind}self.play(self.camera.frame.animate.move_to(ORIGIN).set(width=14), run_time=0.5)\n')
             buf.write(f'{ind}self.wait(0.3)\n')
