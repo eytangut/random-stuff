@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lean2manim"
+version = "0.1.0"
+description = "Lean 4 proof → deterministic Manim visualization"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "manim>=0.18.0",
+    "networkx>=3.2",
+    "click>=8.1",
+]
+
+[project.scripts]
+lean2manim = "lean2manim.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lean2manim*"]

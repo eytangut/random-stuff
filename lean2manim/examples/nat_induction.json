@@ -1,0 +1,618 @@
+{
+  "theorem_name": "sum_formula",
+  "theorem_statement": "∀ n : ℕ, 2 * (∑ i in Finset.range (n+1), i) = n * (n+1)",
+  "steps": [
+    {
+      "id": 0,
+      "tactic": "intro",
+      "tactic_args": ["n"],
+      "pre_goals": [{
+        "id": "g0",
+        "conclusion": {
+          "kind": "forall",
+          "name": "n",
+          "type_category": "Nat",
+          "syntactic_role": "conclusion",
+          "args": [{
+            "kind": "eq",
+            "name": "",
+            "type_category": "Prop",
+            "syntactic_role": "conclusion",
+            "args": [
+              {
+                "kind": "app",
+                "name": "HMul.hMul",
+                "type_category": "Nat",
+                "syntactic_role": "lhs",
+                "args": [
+                  {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                  {"kind": "app", "name": "Finset.sum", "type_category": "Nat", "syntactic_role": "lhs", "args": []}
+                ]
+              },
+              {
+                "kind": "app",
+                "name": "HMul.hMul",
+                "type_category": "Nat",
+                "syntactic_role": "rhs",
+                "args": [
+                  {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                  {
+                    "kind": "app",
+                    "name": "HAdd.hAdd",
+                    "type_category": "Nat",
+                    "syntactic_role": "rhs",
+                    "args": [
+                      {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                      {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }]
+        },
+        "hypotheses": []
+      }],
+      "post_goals": [{
+        "id": "g1",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "lhs",
+              "args": [
+                {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                {"kind": "app", "name": "Finset.sum", "type_category": "Nat", "syntactic_role": "lhs", "args": []}
+              ]
+            },
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "rhs",
+              "args": [
+                {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "rhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "hypotheses": [
+          {
+            "name": "n",
+            "type_expr": {
+              "kind": "const",
+              "name": "Nat",
+              "type_category": "Nat",
+              "syntactic_role": "hypothesis",
+              "args": []
+            }
+          }
+        ]
+      }],
+      "hyp_added": [
+        {
+          "name": "n",
+          "type_expr": {
+            "kind": "const",
+            "name": "Nat",
+            "type_category": "Nat",
+            "syntactic_role": "hypothesis",
+            "args": []
+          }
+        }
+      ],
+      "hyp_removed": []
+    },
+    {
+      "id": 1,
+      "tactic": "induction",
+      "tactic_args": ["n"],
+      "pre_goals": [{
+        "id": "g1",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "lhs",
+              "args": [
+                {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                {"kind": "app", "name": "Finset.sum", "type_category": "Nat", "syntactic_role": "lhs", "args": []}
+              ]
+            },
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "rhs",
+              "args": [
+                {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "rhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "hypotheses": [
+          {
+            "name": "n",
+            "type_expr": {
+              "kind": "const",
+              "name": "Nat",
+              "type_category": "Nat",
+              "syntactic_role": "hypothesis",
+              "args": []
+            }
+          }
+        ]
+      }],
+      "post_goals": [
+        {
+          "id": "g2_base",
+          "conclusion": {
+            "kind": "eq",
+            "name": "",
+            "type_category": "Prop",
+            "syntactic_role": "conclusion",
+            "args": [
+              {"kind": "nat_lit", "name": "0", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+              {"kind": "nat_lit", "name": "0", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+            ]
+          },
+          "hypotheses": []
+        },
+        {
+          "id": "g3_step",
+          "conclusion": {
+            "kind": "eq",
+            "name": "",
+            "type_category": "Prop",
+            "syntactic_role": "conclusion",
+            "args": [
+              {
+                "kind": "app",
+                "name": "HMul.hMul",
+                "type_category": "Nat",
+                "syntactic_role": "lhs",
+                "args": [
+                  {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                  {
+                    "kind": "app",
+                    "name": "Finset.sum",
+                    "type_category": "Nat",
+                    "syntactic_role": "lhs",
+                    "args": [
+                      {
+                        "kind": "app",
+                        "name": "Finset.range",
+                        "type_category": "Nat",
+                        "syntactic_role": "lhs",
+                        "args": [
+                          {
+                            "kind": "app",
+                            "name": "HAdd.hAdd",
+                            "type_category": "Nat",
+                            "syntactic_role": "lhs",
+                            "args": [
+                              {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                              {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "app",
+                "name": "HMul.hMul",
+                "type_category": "Nat",
+                "syntactic_role": "rhs",
+                "args": [
+                  {
+                    "kind": "app",
+                    "name": "HAdd.hAdd",
+                    "type_category": "Nat",
+                    "syntactic_role": "lhs",
+                    "args": [
+                      {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                      {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                    ]
+                  },
+                  {
+                    "kind": "app",
+                    "name": "HAdd.hAdd",
+                    "type_category": "Nat",
+                    "syntactic_role": "rhs",
+                    "args": [
+                      {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                      {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "hypotheses": [
+            {
+              "name": "ih",
+              "type_expr": {
+                "kind": "eq",
+                "name": "",
+                "type_category": "Prop",
+                "syntactic_role": "hypothesis",
+                "args": [
+                  {
+                    "kind": "app",
+                    "name": "HMul.hMul",
+                    "type_category": "Nat",
+                    "syntactic_role": "lhs",
+                    "args": [
+                      {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                      {"kind": "app", "name": "Finset.sum", "type_category": "Nat", "syntactic_role": "lhs", "args": []}
+                    ]
+                  },
+                  {
+                    "kind": "app",
+                    "name": "HMul.hMul",
+                    "type_category": "Nat",
+                    "syntactic_role": "rhs",
+                    "args": [
+                      {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                      {
+                        "kind": "app",
+                        "name": "HAdd.hAdd",
+                        "type_category": "Nat",
+                        "syntactic_role": "rhs",
+                        "args": [
+                          {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                          {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "hyp_added": [],
+      "hyp_removed": []
+    },
+    {
+      "id": 2,
+      "tactic": "simp",
+      "tactic_args": ["Finset.sum_range_zero"],
+      "pre_goals": [{
+        "id": "g2_base",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {"kind": "nat_lit", "name": "0", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+            {"kind": "nat_lit", "name": "0", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+          ]
+        },
+        "hypotheses": []
+      }],
+      "post_goals": [],
+      "hyp_added": [],
+      "hyp_removed": []
+    },
+    {
+      "id": 3,
+      "tactic": "rw",
+      "tactic_args": ["Finset.sum_range_succ"],
+      "pre_goals": [{
+        "id": "g3_step",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "lhs",
+              "args": [
+                {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                {"kind": "app", "name": "Finset.sum", "type_category": "Nat", "syntactic_role": "lhs", "args": []}
+              ]
+            },
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "rhs",
+              "args": [
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "lhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                },
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "rhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "hypotheses": [
+          {
+            "name": "ih",
+            "type_expr": {
+              "kind": "eq",
+              "name": "",
+              "type_category": "Prop",
+              "syntactic_role": "hypothesis",
+              "args": []
+            }
+          }
+        ]
+      }],
+      "post_goals": [{
+        "id": "g4_rw",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {
+              "kind": "app",
+              "name": "HAdd.hAdd",
+              "type_category": "Nat",
+              "syntactic_role": "lhs",
+              "args": [
+                {
+                  "kind": "app",
+                  "name": "HMul.hMul",
+                  "type_category": "Nat",
+                  "syntactic_role": "lhs",
+                  "args": [
+                    {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "app", "name": "Finset.sum", "type_category": "Nat", "syntactic_role": "lhs", "args": []}
+                  ]
+                },
+                {
+                  "kind": "app",
+                  "name": "HMul.hMul",
+                  "type_category": "Nat",
+                  "syntactic_role": "rhs",
+                  "args": [
+                    {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {
+                      "kind": "app",
+                      "name": "HAdd.hAdd",
+                      "type_category": "Nat",
+                      "syntactic_role": "rhs",
+                      "args": [
+                        {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                        {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "rhs",
+              "args": [
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "lhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                },
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "rhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "hypotheses": [
+          {
+            "name": "ih",
+            "type_expr": {
+              "kind": "eq",
+              "name": "",
+              "type_category": "Prop",
+              "syntactic_role": "hypothesis",
+              "args": []
+            }
+          }
+        ]
+      }],
+      "hyp_added": [],
+      "hyp_removed": []
+    },
+    {
+      "id": 4,
+      "tactic": "rw",
+      "tactic_args": ["ih"],
+      "pre_goals": [{
+        "id": "g4_rw",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {"kind": "app", "name": "HAdd.hAdd", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+            {"kind": "app", "name": "HMul.hMul", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+          ]
+        },
+        "hypotheses": [
+          {
+            "name": "ih",
+            "type_expr": {
+              "kind": "eq",
+              "name": "",
+              "type_category": "Prop",
+              "syntactic_role": "hypothesis",
+              "args": []
+            }
+          }
+        ]
+      }],
+      "post_goals": [{
+        "id": "g5_ring",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {
+              "kind": "app",
+              "name": "HAdd.hAdd",
+              "type_category": "Nat",
+              "syntactic_role": "lhs",
+              "args": [
+                {"kind": "app", "name": "HMul.hMul", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                {"kind": "app", "name": "HMul.hMul", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+              ]
+            },
+            {
+              "kind": "app",
+              "name": "HMul.hMul",
+              "type_category": "Nat",
+              "syntactic_role": "rhs",
+              "args": [
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "lhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "1", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                },
+                {
+                  "kind": "app",
+                  "name": "HAdd.hAdd",
+                  "type_category": "Nat",
+                  "syntactic_role": "rhs",
+                  "args": [
+                    {"kind": "var", "name": "n", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+                    {"kind": "nat_lit", "name": "2", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "hypotheses": [
+          {
+            "name": "ih",
+            "type_expr": {
+              "kind": "eq",
+              "name": "",
+              "type_category": "Prop",
+              "syntactic_role": "hypothesis",
+              "args": []
+            }
+          }
+        ]
+      }],
+      "hyp_added": [],
+      "hyp_removed": []
+    },
+    {
+      "id": 5,
+      "tactic": "ring",
+      "tactic_args": [],
+      "pre_goals": [{
+        "id": "g5_ring",
+        "conclusion": {
+          "kind": "eq",
+          "name": "",
+          "type_category": "Prop",
+          "syntactic_role": "conclusion",
+          "args": [
+            {"kind": "app", "name": "HAdd.hAdd", "type_category": "Nat", "syntactic_role": "lhs", "args": []},
+            {"kind": "app", "name": "HMul.hMul", "type_category": "Nat", "syntactic_role": "rhs", "args": []}
+          ]
+        },
+        "hypotheses": [
+          {
+            "name": "ih",
+            "type_expr": {
+              "kind": "eq",
+              "name": "",
+              "type_category": "Prop",
+              "syntactic_role": "hypothesis",
+              "args": []
+            }
+          }
+        ]
+      }],
+      "post_goals": [],
+      "hyp_added": [],
+      "hyp_removed": []
+    }
+  ]
+}
