@@ -247,3 +247,121 @@ def test_emit_node_var_special_chars():
         assert "node_g0_sub_node_" in content
     finally:
         os.unlink(out)
+
+
+def test_emit_hyp_removed_clears_shelf():
+    """When hyp_removed is populated the generated code removes the item from the shelf."""
+    proof = {
+        "theorem_name": "clear_test",
+        "theorem_statement": "∀ n : ℕ, True",
+        "steps": [
+            {
+                "id": 0,
+                "tactic": "intro",
+                "tactic_args": ["n"],
+                "pre_goals": [{"id": "g0", "conclusion": {"kind": "forall", "name": "n",
+                               "type_category": "Nat", "syntactic_role": "conclusion",
+                               "args": [{"kind": "const", "name": "True", "type_category": "Prop",
+                                         "syntactic_role": "conclusion", "args": []}]},
+                               "hypotheses": []}],
+                "post_goals": [{"id": "g1", "conclusion": {"kind": "const", "name": "True",
+                                "type_category": "Prop", "syntactic_role": "conclusion", "args": []},
+                                "hypotheses": []}],
+                "hyp_added": [{"name": "n", "type_expr": {"kind": "const", "name": "Nat",
+                                "type_category": "Nat", "syntactic_role": "hypothesis", "args": []}}],
+                "hyp_removed": []
+            },
+            {
+                "id": 1,
+                "tactic": "clear",
+                "tactic_args": ["n"],
+                "pre_goals": [{"id": "g1", "conclusion": {"kind": "const", "name": "True",
+                               "type_category": "Prop", "syntactic_role": "conclusion", "args": []},
+                               "hypotheses": []}],
+                "post_goals": [{"id": "g2", "conclusion": {"kind": "const", "name": "True",
+                                "type_category": "Prop", "syntactic_role": "conclusion", "args": []},
+                                "hypotheses": []}],
+                "hyp_added": [],
+                "hyp_removed": ["n"]
+            },
+        ]
+    }
+    pt = parse_proof_tree(proof)
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False, dir=".") as f:
+        out = f.name
+    try:
+        emit_scene_file(pt, out)
+        content = Path(out).read_text()
+        ast.parse(content)
+        # The generated code must call shelf.remove_item with the hyp_0 shelf key
+        assert "shelf.remove_item" in content
+        assert "hyp_n_0" in content  # key = hyp_{name}_{step_id}
+    finally:
+        os.unlink(out)
+
+
+def test_emit_real_goal_gets_axis_region():
+    """Goals with type_category='Real' should use axis_region encoding in geometric style."""
+    proof = {
+        "theorem_name": "real_test",
+        "theorem_statement": "x > 0",
+        "steps": [
+            {
+                "id": 0,
+                "tactic": "exact",
+                "tactic_args": ["h"],
+                "pre_goals": [{"id": "g0", "conclusion": {"kind": "const", "name": "x",
+                               "type_category": "Real", "syntactic_role": "conclusion", "args": []},
+                               "hypotheses": []}],
+                "post_goals": [],
+                "hyp_added": [],
+                "hyp_removed": []
+            }
+        ]
+    }
+    pt = parse_proof_tree(proof)
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False, dir=".") as f:
+        out = f.name
+    try:
+        emit_scene_file(pt, out, style="geometric")
+        content = Path(out).read_text()
+        assert "axis_region" in content
+        ast.parse(content)
+    finally:
+        os.unlink(out)
+
+
+def test_emit_generic_fallback_no_self_transform():
+    """The generic animation branch uses a safe if-in-active_nodes guard, not a self-transform."""
+    proof = {
+        "theorem_name": "generic_test",
+        "theorem_statement": "P",
+        "steps": [
+            {
+                "id": 0,
+                "tactic": "unknown_tactic",
+                "tactic_args": [],
+                "pre_goals": [{"id": "g0", "conclusion": {"kind": "const", "name": "P",
+                               "type_category": "Prop", "syntactic_role": "conclusion", "args": []},
+                               "hypotheses": []}],
+                "post_goals": [{"id": "g1", "conclusion": {"kind": "const", "name": "P2",
+                                "type_category": "Prop", "syntactic_role": "conclusion", "args": []},
+                                "hypotheses": []}],
+                "hyp_added": [],
+                "hyp_removed": []
+            }
+        ]
+    }
+    pt = parse_proof_tree(proof)
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False, dir=".") as f:
+        out = f.name
+    try:
+        emit_scene_file(pt, out)
+        content = Path(out).read_text()
+        ast.parse(content)
+        # Should use the if-guard pattern, not .get()
+        assert 'active_nodes.get(' not in content
+        assert 'if "g0" in active_nodes' in content
+    finally:
+        os.unlink(out)
+
