@@ -1,3 +1,4 @@
+import ast
 import os
 import tempfile
 from pathlib import Path
@@ -35,6 +36,8 @@ def test_emit_produces_python_file():
         assert "ProofScene" in content
         assert "HypothesisShelf" in content
         assert "construct" in content
+        # Generated file must be valid Python
+        ast.parse(content)
     finally:
         os.unlink(out)
 
@@ -48,7 +51,10 @@ def test_emit_deterministic():
     try:
         emit_scene_file(pt, out1)
         emit_scene_file(pt, out2)
-        assert Path(out1).read_text() == Path(out2).read_text()
+        c1 = Path(out1).read_text()
+        c2 = Path(out2).read_text()
+        assert c1 == c2
+        ast.parse(c1)
     finally:
         os.unlink(out1)
         os.unlink(out2)
@@ -62,6 +68,7 @@ def test_emit_contains_theorem_name():
         emit_scene_file(pt, out)
         content = Path(out).read_text()
         assert "test_thm" in content
+        ast.parse(content)
     finally:
         os.unlink(out)
 
@@ -108,6 +115,7 @@ def test_emit_with_intro_step():
         content = Path(out).read_text()
         assert "fly_in" in content or "FadeIn" in content
         assert "intro_test" in content
+        ast.parse(content)
     finally:
         os.unlink(out)
 
@@ -142,5 +150,100 @@ def test_emit_with_induction_step():
         emit_scene_file(pt, out)
         content = Path(out).read_text()
         assert "GrowFromCenter" in content or "spiral" in content
+        ast.parse(content)
+    finally:
+        os.unlink(out)
+
+
+def test_emit_style_geometric():
+    """--style geometric produces valid Python with number_line encoding for Nat goals."""
+    proof = {
+        "theorem_name": "geo_test",
+        "theorem_statement": "n = n",
+        "steps": [
+            {
+                "id": 0,
+                "tactic": "rfl",
+                "tactic_args": [],
+                "pre_goals": [{"id": "g0", "conclusion": {"kind": "const", "name": "n",
+                               "type_category": "Nat", "syntactic_role": "conclusion", "args": []},
+                               "hypotheses": []}],
+                "post_goals": [],
+                "hyp_added": [],
+                "hyp_removed": []
+            }
+        ]
+    }
+    pt = parse_proof_tree(proof)
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False, dir=".") as f:
+        out = f.name
+    try:
+        emit_scene_file(pt, out, style="geometric")
+        content = Path(out).read_text()
+        assert "number_line" in content
+        ast.parse(content)
+    finally:
+        os.unlink(out)
+
+
+def test_emit_special_chars_in_label():
+    """Labels with quotes/newlines must not break the generated Python."""
+    proof = {
+        "theorem_name": 'thm_with_"quotes"',
+        "theorem_statement": 'line1\nline2',
+        "steps": [
+            {
+                "id": 0,
+                "tactic": "rfl",
+                "tactic_args": [],
+                "pre_goals": [{"id": "g0", "conclusion": {"kind": "eq", "name": "",
+                               "type_category": "Prop", "syntactic_role": "conclusion", "args": []},
+                               "hypotheses": []}],
+                "post_goals": [],
+                "hyp_added": [],
+                "hyp_removed": []
+            }
+        ]
+    }
+    pt = parse_proof_tree(proof)
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False, dir=".") as f:
+        out = f.name
+    try:
+        emit_scene_file(pt, out)
+        content = Path(out).read_text()
+        # Must parse without error despite special chars
+        ast.parse(content)
+    finally:
+        os.unlink(out)
+
+
+def test_emit_node_var_special_chars():
+    """Node ids with primes/dots/colons produce valid Python identifiers."""
+    proof = {
+        "theorem_name": "prime_test",
+        "theorem_statement": "a' = a'",
+        "steps": [
+            {
+                "id": 0,
+                "tactic": "rfl",
+                "tactic_args": [],
+                "pre_goals": [{"id": "g0.sub:node'", "conclusion": {"kind": "eq", "name": "",
+                               "type_category": "Prop", "syntactic_role": "conclusion", "args": []},
+                               "hypotheses": []}],
+                "post_goals": [],
+                "hyp_added": [],
+                "hyp_removed": []
+            }
+        ]
+    }
+    pt = parse_proof_tree(proof)
+    with tempfile.NamedTemporaryFile(suffix=".py", delete=False, dir=".") as f:
+        out = f.name
+    try:
+        emit_scene_file(pt, out)
+        content = Path(out).read_text()
+        ast.parse(content)
+        # g0.sub:node' → all non-alphanumeric chars replaced with _ → node_g0_sub_node_
+        assert "node_g0_sub_node_" in content
     finally:
         os.unlink(out)

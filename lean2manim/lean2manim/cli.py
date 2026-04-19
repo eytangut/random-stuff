@@ -20,7 +20,12 @@ def main():
     )
     parser.add_argument(
         "--style", "-s", choices=["geometric", "algebraic", "auto"], default="auto",
-        help="Visual style (default: auto)"
+        help=(
+            "Visual style for proof objects. "
+            "'auto' (default): type-based dispatch (number lines for Nat, Venn for Set, …). "
+            "'geometric': always prefer spatial/visual representations (number lines, Venn diagrams). "
+            "'algebraic': prefer symbolic box representations with equation bridges."
+        ),
     )
     parser.add_argument("--scene-only", action="store_true", help="Only write the scene .py file, do not render")
     args = parser.parse_args()
@@ -34,7 +39,7 @@ def main():
     scene_path = proof_path.with_suffix(".scene.py")
 
     print(f"[lean2manim] Loaded proof: {proof_tree.theorem_name} ({len(proof_tree.steps)} steps)")
-    emit_scene_file(proof_tree, str(scene_path))
+    emit_scene_file(proof_tree, str(scene_path), style=args.style)
     print(f"[lean2manim] Scene written to: {scene_path}")
 
     if args.scene_only:

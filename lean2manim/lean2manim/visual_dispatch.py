@@ -68,14 +68,66 @@ def _expr_encoding(expr: Expr) -> str:
     return _TYPE_ENCODING.get(expr.type_category, "generic_box")
 
 
-def goal_visual_spec(goal: GoalState, color: str = "#FFFFFF") -> VisualSpec:
-    enc = _expr_encoding(goal.conclusion)
+# ── style-specific encoding overrides ────────────────────────────────────────
+
+# geometric: prefer visual/spatial representations
+_GEOMETRIC_ENCODING: dict[str, str] = {
+    "Nat":      "number_line",
+    "Int":      "number_line",
+    "Real":     "axis_region",
+    "Prop":     "generic_box",
+    "Set":      "venn",
+    "List":     "squares",
+    "Function": "arrow_blob",
+    "Group":    "arrow_blob",
+    "Unknown":  "generic_box",
+    "":         "generic_box",
+}
+
+# algebraic: prefer symbolic/algebraic representations (eq_bridge for equalities)
+_ALGEBRAIC_ENCODING: dict[str, str] = {
+    "Nat":      "generic_box",
+    "Int":      "generic_box",
+    "Real":     "generic_box",
+    "Prop":     "generic_box",
+    "Set":      "generic_box",
+    "List":     "squares",
+    "Function": "arrow_blob",
+    "Group":    "arrow_blob",
+    "Unknown":  "generic_box",
+    "":         "generic_box",
+}
+
+
+def _expr_encoding_for_style(expr: Expr, style: str) -> str:
+    """Return the visual encoding for expr under the given style."""
+    # expr-shape rules always take priority (eq_bridge, prop_and, etc.)
+    if expr.kind == "eq":
+        return "eq_bridge"
+    if expr.kind == "and":
+        return "prop_and"
+    if expr.kind == "or":
+        return "prop_or"
+    if expr.kind == "forall":
+        return "forall_param"
+    if expr.kind == "exists":
+        return "exists_container"
+    if style == "geometric":
+        return _GEOMETRIC_ENCODING.get(expr.type_category, "generic_box")
+    if style == "algebraic":
+        return _ALGEBRAIC_ENCODING.get(expr.type_category, "generic_box")
+    # auto: same as geometric (type-based)
+    return _TYPE_ENCODING.get(expr.type_category, "generic_box")
+
+
+def goal_visual_spec(goal: GoalState, color: str = "#FFFFFF", style: str = "auto") -> VisualSpec:
+    enc = _expr_encoding_for_style(goal.conclusion, style)
     label = _expr_label(goal.conclusion)
     sub = []
     if goal.conclusion.kind in ("eq", "and", "or"):
-        for i, arg in enumerate(goal.conclusion.args):
+        for arg in goal.conclusion.args:
             sub.append(VisualSpec(
-                encoding=_expr_encoding(arg),
+                encoding=_expr_encoding_for_style(arg, style),
                 label=_expr_label(arg),
                 color=color,
                 anim_hint="none",

@@ -1,6 +1,5 @@
 from __future__ import annotations
 import math
-from typing import Any
 
 
 class Node:
@@ -37,16 +36,25 @@ class ForceLayout:
         # deterministic PRNG — LCG seeded by proof_hash
         # Use hashlib to handle any string, not just hex
         import hashlib
-        seed = int(hashlib.md5(proof_hash.encode()).hexdigest()[:8], 16)
-        self._rng_state = seed
+        self._seed = int(hashlib.md5(proof_hash.encode()).hexdigest()[:8], 16)
+        self._rng_state = self._seed
+
+    def _reset_rng(self) -> None:
+        """Reset the PRNG so repeated calls to run() with identical inputs give identical output."""
+        self._rng_state = self._seed
 
     def _rand(self) -> float:
         """LCG pseudo-random in [0, 1)."""
         self._rng_state = (self._rng_state * 1664525 + 1013904223) & 0xFFFFFFFF
-        return self._rng_state / 0xFFFFFFFF
+        return self._rng_state / (2 ** 32)
 
     def initial_positions(self, node_ids: list[str]) -> dict[str, tuple[float, float]]:
-        """Place nodes in a circle with slight jitter."""
+        """Place nodes in a circle with slight jitter.
+
+        The PRNG is reset at the start so this is always deterministic regardless
+        of how many times run() has previously been called on this instance.
+        """
+        self._reset_rng()
         n = len(node_ids)
         positions = {}
         for i, nid in enumerate(node_ids):
