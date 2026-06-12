@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Quiet Stacks</title>
+    <meta
+      name="description"
+      content="A personal library where every shelf holds a downloadable PDF."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="dust dust-left" aria-hidden="true"></div>
+    <div class="dust dust-right" aria-hidden="true"></div>
+
+    <header class="hero">
+      <p class="eyebrow">Private Collection</p>
+      <h1>The Quiet Stacks</h1>
+      <p class="subtitle">
+        A cozy digital shelf for static PDFs, wrapped in old-library atmosphere.
+      </p>
+      <a class="hero-link" href="#catalog">Step Into the Stacks</a>
+    </header>
+
+    <main id="catalog" class="catalog" aria-label="Book catalog">
+      <section class="shelf" aria-label="Featured shelf">
+        <article class="book" data-title="Arcane Atlas" data-author="L. Verne" data-genre="Folklore">
+          <div class="book-spine">
+            <p class="book-genre">Folklore</p>
+            <h2>Arcane Atlas</h2>
+            <p class="book-author">L. Verne</p>
+          </div>
+          <p class="book-blurb">Cartographic myths, annotated maps, and forgotten routes.</p>
+          <a class="download" href="./assets/pdfs/arcane-atlas.pdf" download>Download PDF</a>
+        </article>
+
+        <article class="book" data-title="The Midnight Index" data-author="M. Hale" data-genre="Mystery">
+          <div class="book-spine">
+            <p class="book-genre">Mystery</p>
+            <h2>The Midnight Index</h2>
+            <p class="book-author">M. Hale</p>
+          </div>
+          <p class="book-blurb">A catalog of coded references found in moonlit archives.</p>
+          <a class="download" href="./assets/pdfs/the-midnight-index.pdf" download>Download PDF</a>
+        </article>
+
+        <article class="book" data-title="Embers of Ink" data-author="R. Sol" data-genre="Poetry">
+          <div class="book-spine">
+            <p class="book-genre">Poetry</p>
+            <h2>Embers of Ink</h2>
+            <p class="book-author">R. Sol</p>
+          </div>
+          <p class="book-blurb">Short poems preserved like ash in vellum notebooks.</p>
+          <a class="download" href="./assets/pdfs/embers-of-ink.pdf" download>Download PDF</a>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>Curated quietly, year <span id="year"></span>.</p>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
