@@ -122,7 +122,7 @@ def collect_equations(markdown_text: str) -> List[EquationMatch]:
 def verbalize_equations(
     equations: List[EquationMatch], device: torch.device
 ) -> List[str]:
-    processor = AutoProcessor.from_pretrained("google/flan-t5-base")
+    processor = AutoTokenizer.from_pretrained("google/flan-t5-base")
     model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base").to(device)
     model.eval()
 
