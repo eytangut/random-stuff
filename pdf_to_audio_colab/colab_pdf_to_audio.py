@@ -16,7 +16,7 @@ from PIL import Image
 from tqdm.auto import tqdm
 from transformers import (
     AutoModelForSeq2SeqLM,
-    AutoProcessor,
+    AutoTokenizer,
     NougatProcessor,
     SpeechT5ForTextToSpeech,
     SpeechT5HifiGan,
