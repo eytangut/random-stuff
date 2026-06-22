@@ -48,16 +48,15 @@ def try_colab_upload() -> str:
 
 
 def pdf_to_images(pdf_path: str, dpi: int = 180) -> List[Image.Image]:
-    doc = fitz.open(pdf_path)
     images: List[Image.Image] = []
     zoom = dpi / 72.0
     mat = fitz.Matrix(zoom, zoom)
-    for page in doc:
-        pix = page.get_pixmap(matrix=mat, alpha=False)
-        mode = "RGB"
-        img = Image.frombytes(mode, [pix.width, pix.height], pix.samples)
-        images.append(img)
-    doc.close()
+    with fitz.open(pdf_path) as doc:
+        for page in doc:
+            pix = page.get_pixmap(matrix=mat, alpha=False)
+            mode = "RGB"
+            img = Image.frombytes(mode, [pix.width, pix.height], pix.samples)
+            images.append(img)
     return images
 
 
