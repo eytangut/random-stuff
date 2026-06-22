@@ -13,7 +13,7 @@ This standalone script is built for **Google Colab free tier** and does:
 
 ## Colab usage
 
-Run this in a Colab notebook cell:
+Run this in a Colab notebook cell (after cloning this repo into `/content/random-stuff`, or adjust the paths accordingly):
 
 ```python
 !pip -q install -r /content/random-stuff/pdf_to_audio_colab/requirements.txt

@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 import re
 import textwrap
 from dataclasses import dataclass
@@ -219,7 +218,8 @@ def build_tts(device: torch.device):
     model.eval()
     vocoder.eval()
     embeddings_ds = load_dataset("Matthijs/cmu-arctic-xvectors", split="validation")
-    speaker_embedding = torch.tensor(embeddings_ds[7306]["xvector"]).unsqueeze(0).to(device)
+    idx = min(7306, len(embeddings_ds) - 1)
+    speaker_embedding = torch.tensor(embeddings_ds[idx]["xvector"]).unsqueeze(0).to(device)
     return processor, model, vocoder, speaker_embedding
 
 
